@@ -3563,11 +3563,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\dlarenas\\source\\repos\\SincronizadorSmartSheetComisiones\\SincronizadorSmartSheetComisiones\\SincronizadorSmartSheetComisiones.csproj",
+      "projectUniqueName": "C:\\Users\\dlarenas\\OneDrive - Constructora Carran SA\\Escritorio\\SRT\\SincronizadorSmartSheetComisiones\\SincronizadorSmartSheetComisiones\\SincronizadorSmartSheetComisiones.csproj",
       "projectName": "SincronizadorSmartSheetComisiones",
-      "projectPath": "C:\\Users\\dlarenas\\source\\repos\\SincronizadorSmartSheetComisiones\\SincronizadorSmartSheetComisiones\\SincronizadorSmartSheetComisiones.csproj",
+      "projectPath": "C:\\Users\\dlarenas\\OneDrive - Constructora Carran SA\\Escritorio\\SRT\\SincronizadorSmartSheetComisiones\\SincronizadorSmartSheetComisiones\\SincronizadorSmartSheetComisiones.csproj",
       "packagesPath": "C:\\Users\\dlarenas\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\dlarenas\\source\\repos\\SincronizadorSmartSheetComisiones\\SincronizadorSmartSheetComisiones\\obj\\",
+      "outputPath": "C:\\Users\\dlarenas\\OneDrive - Constructora Carran SA\\Escritorio\\SRT\\SincronizadorSmartSheetComisiones\\SincronizadorSmartSheetComisiones\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\dlarenas\\AppData\\Roaming\\NuGet\\NuGet.Config",

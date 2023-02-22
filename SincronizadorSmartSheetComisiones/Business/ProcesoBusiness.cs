@@ -1,7 +1,9 @@
-﻿using DocumentFormat.OpenXml.Presentation;
+﻿using DocumentFormat.OpenXml.Drawing.Spreadsheet;
+using DocumentFormat.OpenXml.Presentation;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Newtonsoft.Json;
 using NLog;
+using SincronizadorSmartSheetComisiones.Models.Fin7;
 using SincronizadorSmartSheetComisiones.Models.POK;
 using Smartsheet.Api;
 using Smartsheet.Api.Models;
@@ -31,7 +33,7 @@ namespace SincronizadorSmartSheetComisiones.Business
         //private const string apiKey = "1035e275034dc0b056fe80db53e52f14";
         private static string UrlBase = ConfigurationManager.AppSettings["urlAPI"];//"https: //api-gci-rest.integracionplanok.io/api";
         #endregion
-        public ProcesoBusiness(string tokenSmartSheet,long sheetSmartSheet1)
+        public ProcesoBusiness(string tokenSmartSheet, long sheetSmartSheet1)
         {
             _tokenSmartSheet = tokenSmartSheet;
             _sheetSmartSheet1 = sheetSmartSheet1;
@@ -75,27 +77,44 @@ namespace SincronizadorSmartSheetComisiones.Business
             }
         }
 
-        public void getDataSmartSheetSDK()
+        public IList<Smartsheet.Api.Models.Row> getDataSmartSheetSDK()
         {
             SmartsheetClient smartsheet = new SmartsheetBuilder().SetAccessToken(_tokenSmartSheet).Build();
-            var principalSheet = smartsheet.SheetResources.GetSheet(_sheetSmartSheet1,null,null,null,null,null,null,null);
-            //principalSheet.GetColumnById()
-            foreach (var item in principalSheet.Rows)
-            {
-                // se recorren todas las filas de la hoja.
-                if (item.Id == 0L)
-                {
+            var principalSheet = smartsheet.SheetResources.GetSheet(_sheetSmartSheet1, null, null, null, null, null, null, null);
 
-                }
-            }
+            return principalSheet.Rows;
+        }
+
+        public Smartsheet.Api.Models.Cell[] InsertSmartSheet(long columnId, string value)
+        {
+            Smartsheet.Api.Models.Cell[] cellsToInsert = new Smartsheet.Api.Models.Cell[]
+            {
+              new Smartsheet.Api.Models.Cell
+              {
+                ColumnId = columnId,
+                Value = value,
+                Strict = false
+              }
+            };
             
+
+            return cellsToInsert;
+
+        }
+
+        public void AddRowSmartSheet(List<Smartsheet.Api.Models.Row> filas)
+        {
+            SmartsheetClient smartsheet = new SmartsheetBuilder().SetAccessToken(_tokenSmartSheet).Build();
+            IList<Smartsheet.Api.Models.Row> newRows = smartsheet.SheetResources.RowResources.AddRows(
+              _sheetSmartSheet1, filas 
+            );
         }
         #endregion
 
         #region [Datos PlanOK]
         public void getDataPlanOK()
         {
-            
+
             #region API - CGI PARAMETROS
             string url = ConfigurationManager.AppSettings["urlAPI"] ?? string.Empty;
             _logger.Info($"[Parametros] urlAPI {url}");
@@ -170,9 +189,9 @@ namespace SincronizadorSmartSheetComisiones.Business
         #endregion
 
         #region [Datos Fin700]
-        public static async Task<object?> getDataFIN7(string url)
+        public async Task<List<SmartSheetComisionesResponseModel>> GetDataComisiones(string url, SmartSheetComisionesRequestModel request)
         {
-            string baseUrl = url;
+            string baseUrl = $"{url}?FechaDesde={request.FechaDesde}&FechaHasta={request.FechaHasta}&Zona={request.Zona}";
             try
             {
                 using (HttpClient client = new HttpClient())
@@ -184,7 +203,7 @@ namespace SincronizadorSmartSheetComisiones.Business
                             var data = await content.ReadAsStringAsync();
                             if (data != null)
                             {
-                                return JsonConvert.DeserializeObject<object>(data);
+                                return JsonConvert.DeserializeObject<List<SmartSheetComisionesResponseModel>>(data);
 
                             }
                             else
