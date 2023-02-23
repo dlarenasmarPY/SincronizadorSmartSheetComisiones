@@ -33,6 +33,7 @@ namespace SincronizadorSmartSheetComisiones.Business
         //private const string apiKey = "1035e275034dc0b056fe80db53e52f14";
         private static string UrlBase = ConfigurationManager.AppSettings["urlAPI"];//"https: //api-gci-rest.integracionplanok.io/api";
         #endregion
+
         public ProcesoBusiness(string tokenSmartSheet, long sheetSmartSheet1)
         {
             _tokenSmartSheet = tokenSmartSheet;
@@ -41,6 +42,13 @@ namespace SincronizadorSmartSheetComisiones.Business
         }
 
         #region [Datos SmartSheet]
+
+        /// <summary>
+        /// metodo para obtener datos desde la api de smartsheet
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="url">URL de API</param>
+        /// <returns></returns>
         public async Task<T> getData<T>(string url) where T : class
         {
             string baseUrl = url;
@@ -77,6 +85,10 @@ namespace SincronizadorSmartSheetComisiones.Business
             }
         }
 
+        /// <summary>
+        /// se obtienen datos desde SmartSheet a partir de el sheet y token descrito en program (constantes)
+        /// </summary>
+        /// <returns></returns>
         public IList<Smartsheet.Api.Models.Row> getDataSmartSheetSDK()
         {
             SmartsheetClient smartsheet = new SmartsheetBuilder().SetAccessToken(_tokenSmartSheet).Build();
@@ -85,6 +97,12 @@ namespace SincronizadorSmartSheetComisiones.Business
             return principalSheet.Rows;
         }
 
+        /// <summary>
+        /// metodo que se encarga de acumular columnas para crear una fila
+        /// </summary>
+        /// <param name="columnId">Campo tipo long que identifica a una columna</param>
+        /// <param name="value">valor que se pasara a smartsheet</param>
+        /// <returns></returns>
         public Smartsheet.Api.Models.Cell[] InsertSmartSheet(long columnId, string value)
         {
             Smartsheet.Api.Models.Cell[] cellsToInsert = new Smartsheet.Api.Models.Cell[]
@@ -102,6 +120,10 @@ namespace SincronizadorSmartSheetComisiones.Business
 
         }
 
+        /// <summary>
+        /// metodo que se encarga de agregar una fila a SmartSheet
+        /// </summary>
+        /// <param name="filas"></param>
         public void AddRowSmartSheet(List<Smartsheet.Api.Models.Row> filas)
         {
             SmartsheetClient smartsheet = new SmartsheetBuilder().SetAccessToken(_tokenSmartSheet).Build();
@@ -109,6 +131,7 @@ namespace SincronizadorSmartSheetComisiones.Business
               _sheetSmartSheet1, filas 
             );
         }
+
         #endregion
 
         #region [Datos PlanOK]
@@ -189,6 +212,13 @@ namespace SincronizadorSmartSheetComisiones.Business
         #endregion
 
         #region [Datos Fin700]
+
+        /// <summary>
+        /// metodo para obtener datos desde APIFIN7
+        /// </summary>
+        /// <param name="url">url API</param>
+        /// <param name="request"></param>
+        /// <returns></returns>
         public async Task<List<SmartSheetComisionesResponseModel>> GetDataComisiones(string url, SmartSheetComisionesRequestModel request)
         {
             string baseUrl = $"{url}?FechaDesde={request.FechaDesde}&FechaHasta={request.FechaHasta}&Zona={request.Zona}";
