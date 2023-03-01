@@ -3,6 +3,7 @@ using DocumentFormat.OpenXml.Presentation;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Newtonsoft.Json;
 using NLog;
+using RestSharp;
 using SincronizadorSmartSheetComisiones.Models.Fin7;
 using SincronizadorSmartSheetComisiones.Models.POK;
 using Smartsheet.Api;
@@ -135,7 +136,7 @@ namespace SincronizadorSmartSheetComisiones.Business
         #endregion
 
         #region [Datos PlanOK]
-        public void getDataPlanOK()
+        public string getDataPlanOK()
         {
 
             #region API - CGI PARAMETROS
@@ -167,12 +168,18 @@ namespace SincronizadorSmartSheetComisiones.Business
             #endregion
 
             var loginRequest = LoginMethodPost(url, method, string.Empty);
-            var token = loginRequest.token;
+            return loginRequest.token;
 
         }
 
-
-        public LoginResponseModel LoginMethodPost(string url, string method, string parameters)
+        /// <summary>
+        /// metodo que se logea en POK
+        /// </summary>
+        /// <param name="url">url base</param>
+        /// <param name="method">metodo que se ocupara para el log</param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        private static LoginResponseModel LoginMethodPost(string url, string method, string parameters)
         {
             var urlMethod = url + method;
 
@@ -208,6 +215,45 @@ namespace SincronizadorSmartSheetComisiones.Business
             }
 
             return loginResponse;
+        }
+
+        /// <summary>
+        /// obtiene vendedor en base a un identificador
+        /// </summary>
+        /// <param name="requestModel">objeto donde va el identificador</param>
+        /// <param name="jwt">Token obtenido desde metodo de login</param>
+        /// <param name="url">url base</param>
+        /// <returns></returns>
+        public List<VendedorByClienteResponseModel>? getVendedor(VendedorByClienteRequestModel requestModel, string jwt, string url)
+        {
+            var urlMethod = $"{url}/clientes/vendedor-by-cliente?identificador=rut/dni&valorIdentificador={requestModel.valorIdentificador}&tipoCliente=Natural";
+
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlMethod);
+            request.Headers.Add("Authorization: Bearer " + jwt);
+            request.ContentType = "application/json";
+            try
+            {
+                WebResponse response = request.GetResponse();
+                using (Stream responseStream = response.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+                    return Newtonsoft.Json.JsonConvert.DeserializeObject<List<VendedorByClienteResponseModel>>(reader.ReadToEnd());
+                }
+            }
+            catch (WebException ex)
+            {
+                WebResponse errorResponse = ex.Response;
+                using (Stream responseStream = errorResponse.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(responseStream, Encoding.GetEncoding("utf-8"));
+                    String errorText = reader.ReadToEnd();
+                    // log errorText
+                }
+                return null;
+            }
+
+
         }
         #endregion
 
