@@ -86,7 +86,7 @@ namespace SincronizadorSmartSheetComisiones
                         var rut = int.Parse(pivotRut[0]);
 
                         //obtengo el vendedor desde POK
-                        var obj = objProcesoBusiness.getVendedor(new Models.POK.VendedorByClienteRequestModel { identificador = string.Empty, valorIdentificador = rut }, token, urlPOK);
+                        var obj = objProcesoBusiness.getVendedor(new Models.POK.VendedorByClienteRequestModel { identificador = string.Empty, valorIdentificador = rut }, token, urlPOK,"Natural");
                         if (obj.Any() && obj != null)
                         {
                             var rutVendedor = obj.FirstOrDefault().vendedor.vendedor_reserva_reciente != null ? obj.FirstOrDefault().vendedor.vendedor_reserva_reciente.rut_largo_vendedor_reserva:string.Empty; 

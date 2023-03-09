@@ -224,9 +224,9 @@ namespace SincronizadorSmartSheetComisiones.Business
         /// <param name="jwt">Token obtenido desde metodo de login</param>
         /// <param name="url">url base</param>
         /// <returns></returns>
-        public List<VendedorByClienteResponseModel>? getVendedor(VendedorByClienteRequestModel requestModel, string jwt, string url)
+        public List<VendedorByClienteResponseModel>? getVendedor(VendedorByClienteRequestModel requestModel, string jwt, string url,string tipoCliente)
         {
-            var urlMethod = $"{url}/clientes/vendedor-by-cliente?identificador=rut/dni&valorIdentificador={requestModel.valorIdentificador}&tipoCliente=Natural";
+            var urlMethod = $"{url}/clientes/vendedor-by-cliente?identificador=rut/dni&valorIdentificador={requestModel.valorIdentificador}&tipoCliente={tipoCliente}";
 
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlMethod);
@@ -238,6 +238,10 @@ namespace SincronizadorSmartSheetComisiones.Business
                 using (Stream responseStream = response.GetResponseStream())
                 {
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+                    if (reader.ReadToEnd() == null && tipoCliente.Equals("Natural"))
+                    {
+                        getVendedor(requestModel, jwt, url, "Juridico");
+                    }
                     return Newtonsoft.Json.JsonConvert.DeserializeObject<List<VendedorByClienteResponseModel>>(reader.ReadToEnd());
                 }
             }
